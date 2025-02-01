@@ -1,14 +1,15 @@
 import { useState } from "react";
 import "./App.css";
 
-interface FormData {
-  message: string;
+interface SubmittedData {
+  userMessage: string;
+  aiResponse: string;
 }
 
 function App() {
   const [inputText, setInputText] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [submittedData, setSubmittedData] = useState<FormData | null>(null);
+  const [submittedData, setSubmittedData] = useState<SubmittedData | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,12 +27,12 @@ function App() {
 
       if (!response.ok) throw new Error("Submission failed");
       
-      // Parse the response and log the message
+      // Parse the response which now includes the AI's response
       const data = await response.json();
       console.log("Response from server:", data);
-      console.log("Received message:", data.receivedMessage);
+      console.log("Received AI response:", data.aiResponse);
 
-      setSubmittedData({ message: inputText });
+      setSubmittedData({ userMessage: inputText, aiResponse: data.aiResponse });
       setInputText("");
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -65,7 +66,9 @@ function App() {
       {submittedData && (
         <div className="submission-result">
           <h3>Last Submitted Message:</h3>
-          <p>{submittedData.message}</p>
+          <p>{submittedData.userMessage}</p>
+          <h3>AI Response:</h3>
+          <p>{submittedData.aiResponse}</p>
         </div>
       )}
     </div>
